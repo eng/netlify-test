@@ -4,5 +4,6 @@ exports.handler = async function(event) {
     body: JSON.stringify({
       thingToKnow: 'KIEI-451 is awesome'
     })
+    
   }
 }
