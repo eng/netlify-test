@@ -1,13 +1,10 @@
-// Step 2: Change main event listener from DOMContentLoaded to 
-// firebase.auth().onAuthStateChanged and move code that 
-// shows login UI to only show when signed out
-
 firebase.auth().onAuthStateChanged(async function(user) {
   
   if (user) {
     // Signed in
     let db = firebase.firestore()
 
+    // refactor to lambda function
     db.collection('users').doc(user.uid).set({
       name: user.displayName,
       email: user.email
@@ -19,7 +16,8 @@ firebase.auth().onAuthStateChanged(async function(user) {
       let todoText = document.querySelector('#todo').value
 
       if (todoText.length > 0) {
-        // Step 5: Add user ID to newly created to-do
+        // refactor to lambda function
+        // Add user ID to newly created to-do
         let docRef = await db.collection('todos').add({
           text: todoText,
           userId: user.uid
@@ -38,13 +36,16 @@ firebase.auth().onAuthStateChanged(async function(user) {
         document.querySelector(`.todo-${todoId} .done`).addEventListener('click', async function(event) {
           event.preventDefault()
           document.querySelector(`.todo-${todoId}`).classList.add('opacity-20')
+          
+          // refactor to lambda function
           await db.collection('todos').doc(todoId).delete()
         })
         document.querySelector('#todo').value = ''
       }
     })
 
-    // Step 5: Show only my to-dos
+    // refactor to lambda function
+    // Show only my to-dos
     let querySnapshot = await db.collection('todos').where('userId', '==', user.uid).get()
     console.log(`Number to todos in collection: ${querySnapshot.size}`)
 
@@ -64,11 +65,12 @@ firebase.auth().onAuthStateChanged(async function(user) {
       document.querySelector(`.todo-${todoId} .done`).addEventListener('click', async function(event) {
         event.preventDefault()
         document.querySelector(`.todo-${todoId}`).classList.add('opacity-20')
+        // refactor to lambda function
         await db.collection('todos').doc(todoId).delete()
       })
     }
 
-    // Step 4: Create a sign-out button
+    // Create a sign-out button
     document.querySelector('.sign-in-or-sign-out').innerHTML = `
       <button class="text-pink-500 underline sign-out">Sign Out</button>
     `
@@ -82,10 +84,8 @@ firebase.auth().onAuthStateChanged(async function(user) {
   } else {
     // Not logged-in
 
-    // Step 3: Hide the form when signed-out
+    // Hide the form when signed-out
     document.querySelector('form').classList.add('hidden')
-
-    // Step 1: Un-comment to add FirebaseUI Auth
 
     // Initializes FirebaseUI Auth
     let ui = new firebaseui.auth.AuthUI(firebase.auth())
